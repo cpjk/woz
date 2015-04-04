@@ -1,4 +1,4 @@
 node_modules
 .DS_Store*
 .hubot_history
-*sw[o|p]
+*.sw[o|p]
