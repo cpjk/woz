@@ -1,3 +1,12 @@
+# Description:
+#   Says thanks
+#
+# Commands:
+#   thanks woz
+#   thanks, woz
+#   thank you woz
+#   thank you, woz
+
 module.exports = (robot) ->
-  robot.hear /[Tt]hanks(,){0,1} [Ww]oz/i, (msg) ->
+  robot.hear /thank(s,?|\s+you,?)\s+woz/i, (msg) ->
     msg.send "No problem, chief."

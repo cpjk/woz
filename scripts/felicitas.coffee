@@ -9,7 +9,7 @@ Cheerio = require("cheerio")
 url = "http://www.felicitas.ca/menu/on-tap/"
 
 module.exports = (robot) ->
-  robot.respond /felicitas/i, (msg) ->
+  robot.respond /felicitas\s+-?beers?/i, (msg) ->
     msg.http(url).get() (err, res, body) ->
       $ = Cheerio.load(body)
       beers = $("article").map () ->
