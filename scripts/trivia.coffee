@@ -24,7 +24,7 @@ module.exports = (robot) ->
         solutionArray = [0..currentSolution.length-1]
         hintInterval = setInterval () ->
             if Math.ceil(currentSolution.length/2) == solutionArray.length
-                msg.send "Time's up! The correst answer was " + currentSolution
+                msg.send "Time's up! The correct answer was " + currentSolution
                 triviaStop msg
                 triviaStart msg
             else    
@@ -32,7 +32,7 @@ module.exports = (robot) ->
                 solutionHint = solutionHint.substr(0,solutionArray[index]) + currentSolution[solutionArray[index]] + solutionHint.substr(solutionArray[index]+1)
                 solutionArray.splice(index,1)
                 msg.send solutionHint
-        , 1000
+        , 5000
 
     triviaStop = (msg) ->
         clearInterval(hintInterval)
