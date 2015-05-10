@@ -15,6 +15,7 @@ module.exports = (robot) ->
 
   triviaStart = (msg) ->
     triviaOn = true
+    msg.send "Searching for a question..."
     msg.http(url).get() (err, res, body) ->
       response = (JSON.parse body)[0]
       currentSolution = response.answer
@@ -24,7 +25,7 @@ module.exports = (robot) ->
       #(or 1 less than half) are full, then time's up and a new question will be asked
       solutionHint = Array(currentSolution.length+1).join('_')
       #this is so that we don't have repeated letters coming up in the hint
-      #i make an array of numbers (up to solution length) and splice off ones that i've used
+      #make an array of numbers (up to solution length) and splice off ones that have been used
       solutionArray = [0..currentSolution.length-1]
       hintInterval = setInterval () ->
         if Math.ceil(currentSolution.length/2) == solutionArray.length
