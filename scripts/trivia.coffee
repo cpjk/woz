@@ -62,7 +62,6 @@ module.exports = (robot) ->
       triviaStop(msg) 
       msg.send "Trivia is now off"
     else msg.send "Trivia is not in progress"
-      
 
   robot.respond /trivia(\son)?$/i, (msg) ->
     if !triviaOn
