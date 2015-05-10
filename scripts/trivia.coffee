@@ -7,7 +7,7 @@
 
 module.exports = (robot) ->
 
-  triviaOn = false;
+  triviaOn = false
   hintInterval = null
   #url for questions and answers
   url = "http://jservice.io/api/random"
@@ -57,7 +57,7 @@ module.exports = (robot) ->
       msg.reply "Incorrect!"
 
   #command to turn off trivia
-  robot.respond /trivia off/, (msg) ->
+  robot.respond /trivia off/i, (msg) ->
     if triviaOn
       triviaStop(msg) 
       msg.send "Trivia is now off"
