@@ -2,7 +2,7 @@
 #   Facilitates alcoholism
 #
 # Commands:
-#   woz felicitas - beers
+#   !felicitas - beers
 
 Cheerio = require("cheerio")
 

@@ -2,8 +2,8 @@
 #   Facilitates alcoholism
 #
 # Commands:
-#   woz felicitas specials
-#   woz felicitas specials (day of the week)
+#   !felicitas specials
+#   !felicitas specials (day of the week)
 
 Cheerio = require("cheerio")
 Moment = require("moment")

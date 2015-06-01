@@ -2,7 +2,7 @@
 #   start trivia round 
 #
 # Commands:
-#   woz trivia
+#   !trivia
 #   trivia help
 
 module.exports = (robot) ->
