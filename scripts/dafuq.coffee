@@ -1,5 +1,5 @@
 # Description:
-#   Responds when yo question him
+#   Woz responds aggressively when you question him
 #
 # Commands:
 #   what the fuck woz
@@ -19,7 +19,7 @@ module.exports = (robot) ->
       "Well you dont have to be so rude about it...",
       "#{sender} you dont have to be so mean",
       "Look #{sender}, this job aint easy",
-      "Hey #{sender} if you dont like it, ill leave"
+      "Hey #{sender} if you dont like it, I'll leave"
     ]
     # respond with a random message from the responses
     msg.send responses[ Math.floor(Math.random() * responses.length) ]
