@@ -1,12 +1,11 @@
 # Description:
 #  Responds when spoken to in normal conversation
-#  <...> woz <animate or other> [[for]me] <input>
-#  ie: 	hey woz, animate for me a cat with a toy
-#				woz image cow
-#				man man woz, can I have a picture of a dolphin?
-#
-#
-#
+#  
+# Usage:
+#		<...> woz <animate or other> [[for]me] <input>
+#  	ie: 	hey woz, animate for me a cat with a toy
+#					woz image cow
+#					man man woz, can I have a picture of a dolphin?
 
 module.exports = (robot) ->
 	##---- MAIN REDIRECTION ----##
@@ -116,7 +115,7 @@ module.exports = (robot) ->
 		getMsg(msg,type,toGet)
 
 
-	
+
 	#### RICK ASTLEY ####
 	robot.hear /never gonna give you up/i, (msg) ->
 		rick = 1
