@@ -109,7 +109,7 @@ module.exports = (robot) ->
 			toGet = msg.match[2]
 			getMsg(msg,type,toGet)
 	## QUESTION
-	robot.hear /.*woz.*(?:can I).*(animate|animation|gif|image|picture|pic|pix|img)(?: of)?(?: a)? (.*)(?:\?)/i, (msg) ->
+	robot.hear /.*woz.*(?:can (?:i|you)).*(animate|animation|gif|image|picture|pic|pix|img)(?: of)?(?: a)? (.*)(?:\?)/i, (msg) ->
 		type  = msg.match[1]
 		toGet = msg.match[2]
 		getMsg(msg,type,toGet)
