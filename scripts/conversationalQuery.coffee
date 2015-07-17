@@ -14,7 +14,7 @@ module.exports = (robot) ->
 #### google-image IN CONVERSATION ####
 
 	## ASSERTION
-	robot.hear /.*woz.*(animate|animation|gif|image|picture|pic|pix|img)(?:(?: for)? me| of)?(?: a)? (.*)(?!\?)/i, (msg) ->
+	robot.hear /.+woz.*(animate|animation|gif|image|picture|pic|pix|img)(?:(?: for)? me| of)?(?: a)? (.*)(?!\?)/i, (msg) ->
 		# ensure no question mark
 		if msg.match[2].match /[^\?]$/i
 			type  = msg.match[1]
@@ -22,7 +22,7 @@ module.exports = (robot) ->
 			getMsg(msg,type,toGet)
 
 	## QUESTION
-	robot.hear /.*woz.*(?:can (?:i|you)).*(animate|animation|gif|image|picture|pic|pix|img)(?: of)?(?: a)? (.*)(?:\?)/i, (msg) ->
+	robot.hear /.+woz.*(?:can (?:i|you)).*(animate|animation|gif|image|picture|pic|pix|img)(?: of)?(?: a)? (.*)(?:\?)/i, (msg) ->
 		type  = msg.match[1]
 		toGet = msg.match[2]
 		getMsg(msg,type,toGet)
