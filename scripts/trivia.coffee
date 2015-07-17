@@ -48,8 +48,8 @@ module.exports = (robot) ->
     
   #solve attempt matches anything after !, case insensitive
   #need to add some way to score points
-  robot.respond /!(.+)$/i, (msg) ->
-    solveAttempt = msg.match[1]
+  robot.respond /!\s*(.+)$/i, (msg) ->
+    solveAttempt = msg.match[1].trim()
     if solveAttempt.toLowerCase() == currentSolution.toLowerCase()
       msg.reply "Ding Ding Ding, you are correct!"
       triviaStop(msg)
