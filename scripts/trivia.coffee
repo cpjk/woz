@@ -2,31 +2,52 @@
 #   start trivia round 
 #
 # Commands:
-#   !trivia
 #   trivia help
+
+points = {}
 
 module.exports = (robot) ->
 
+  robot.brain.on 'loaded', ->
+    points = robot.brain.points or {}
+
+  #default values
   triviaOn = false
   hintInterval = null
-  #url for questions and answers
-  url = "http://jservice.io/api/random"
   currentSolution = ''
 
+  #url for questions and answers
+  url = "http://jservice.io/api/random"
+
+
+  #----------------Current Question----------------#
   triviaStart = (msg) ->
     triviaOn = true
     msg.send "Searching for a question..."
+
+    #get request to api
     msg.http(url).get() (err, res, body) ->
       response = (JSON.parse body)[0]
       currentSolution = response.answer
+
+      #quick fixes for 2 most common errors in solutions
+      #<i>....</i> and
+      #"....."
+      #could create a more general algorithm for error checking
+      if currentSolution[0] == "<"
+        currentSolution = currentSolution.substr(3,currentSolution.length-7);
+      if currentSolution[0] == "\""
+        currentSolution = currentSolution.substr(1,currentSolution.length-2);
+
       currentQuestion = response.question
       msg.send currentQuestion
-      #creating string of (_) for a hint and filling them in until half of them
-      #(or 1 less than half) are full, then time's up and a new question will be asked
+
+      #creating string of (_) for a hint and filling them in up to half
       solutionHint = Array(currentSolution.length+1).join('_')
-      #this is so that we don't have repeated letters coming up in the hint
-      #make an array of numbers (up to solution length) and splice off ones that have been used
+
+      #array holding indexes of positions that have not been used for the hint, splice off indexes that have been used
       solutionArray = [0..currentSolution.length-1]
+
       hintInterval = setInterval () ->
         if Math.ceil(currentSolution.length/2) == solutionArray.length
           msg.send "Time's up! The correct answer was " + currentSolution
@@ -39,39 +60,76 @@ module.exports = (robot) ->
           msg.send solutionHint
       , 15000
 
-  #function to turn off trivia
-  #made this so i could reset every time a question is done
-  triviaStop = (msg) ->
-    clearInterval(hintInterval)
-    hintInterval = null
-    triviaOn = false
-    
-  #solve attempt matches anything after !, case insensitive
-  #need to add some way to score points
-  robot.respond /!(.+)$/i, (msg) ->
-    solveAttempt = msg.match[1]
+  #-------------Solve Attempt-----------------#
+  #solve attempt matches anything after ?  
+  robot.respond /\?\s*(.+)$/i, (msg) ->
+    solveAttempt = msg.match[1].trim()
     if solveAttempt.toLowerCase() == currentSolution.toLowerCase()
       msg.reply "Ding Ding Ding, you are correct!"
+      
+      #get user and add 1 point to their score
+      username = msg.message.user.name
+      points[username] ?= 0
+      points[username] += 1
+
+      #update points object in brain
+      #data is persistent until hubot is restarted
+      robot.brain.points = points
+
+      msg.reply "You currently have " + points[username] + " points"
+
       triviaStop(msg)
       triviaStart(msg)
     else
       msg.reply "Incorrect!"
-
-  #command to turn off trivia
-  robot.respond /trivia off/i, (msg) ->
+  
+  #---------------Trivia Toggling---------------#
+  #used for setting new question and turning off trivia
+  triviaStop = (msg) ->
+    clearInterval(hintInterval)
+    hintInterval = null
+    triviaOn = false
+  
+  #turn off trivia
+  robot.respond /(trivia\s)?off/i, (msg) ->
     if triviaOn
       triviaStop(msg) 
       msg.send "Trivia is now off"
     else msg.send "Trivia is not in progress"
 
+  #turn on trivia
   robot.respond /trivia(\son)?$/i, (msg) ->
     if !triviaOn
       msg.send "Trivia started"
       triviaStart(msg)
     else msg.send "Trivia already in progress"
 
+  #----------------Leaderboard----------------#
+  #show top 10 on leaderboard + their points
+  #by sorting robot.brain.points object into sortable array
   robot.respond /leaderboard/i, (msg) ->
-    msg.send "Currently there is no database set up to keep track of scores, feel free to contribute!"
+    sortable = []
+    for user,pts of robot.brain.points
+      sortable.push([user,pts])
+    sorted = sortable.sort((a,b) ->
+      b[1]-a[1]
+    )
+    i = 0
+    for user in sorted
+      if i==10
+        break
+      i++
+      msg.send user[0] + ": " + user[1]
 
-  robot.hear /^trivia\s+help$/i, (msg) ->
-    msg.send "Trivia commands:\nwoz trivia: start a round of trivia\nwoz trivia off: stop trivia\nwoz !____: attempt to solve current question\nwoz leaderboard:shows current leaderboard(in development)"
+  #-----------------Debugging-----------------#
+  #Skip current question
+  ###
+  robot.respond /trivia skip/i, (msg) ->
+    msg.send "Solution: " + currentSolution
+    msg.send "Skipping..."
+    triviaStop(msg)
+    triviaStart(msg)
+  ###
+
+  robot.respond /trivia\s+help$/i, (msg) ->
+    msg.send "Trivia commands:\n!trivia: start a round of trivia\n!trivia off: stop trivia\n!?____: attempt to solve current question\n!leaderboard: shows current leaderboard"
