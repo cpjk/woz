@@ -78,10 +78,9 @@ module.exports = (robot) ->
       points[username] += 1
 
       #update points object in db
-      #robot.brain.set "points", points
       robot.brain.data.points = points
 
-      msg.reply "You currently have " + points[username] + " point(s)"
+      msg.reply "You currently have " + points[username] + " points"
 
       triviaStop(msg)
       triviaStart(msg)
@@ -113,7 +112,6 @@ module.exports = (robot) ->
   #show top 10 on leaderboard + their points
   robot.respond /leaderboard/i, (msg) ->
     sortable = []
-    #for user,pts of robot.brain.get('points')
     for user,pts of robot.brain.data.points
       sortable.push([user,pts])
     sorted = sortable.sort((a,b) ->
@@ -129,7 +127,7 @@ module.exports = (robot) ->
   #show user's points
   robot.respond /trivia points/i, (msg) ->
     username = msg.message.user.name
-    msg.reply "You currently have " + (points[username] or 0) + " point(s)"
+    msg.reply "You currently have " + (points[username] or 0) + " points"
 
   #-----------------Debugging-----------------#
   #Skip current question
@@ -142,4 +140,4 @@ module.exports = (robot) ->
   ###
 
   robot.respond /trivia\s+help$/i, (msg) ->
-    msg.send "Trivia commands:\n!trivia: start a round of trivia\n!trivia off: stop trivia\n!?____: attempt to solve current question\n!leaderboard: shows current leaderboard"
+    msg.send "Trivia commands:\n!trivia: start a round of trivia\n!trivia off: stop trivia\n!?____: attempt to solve current question\n!leaderboard: shows current leaderboard\n!trivia points: show your current points"
