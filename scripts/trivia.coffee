@@ -9,7 +9,11 @@ points = {}
 module.exports = (robot) ->
 
   robot.brain.on 'loaded', ->
-    points = robot.brain.points or {}
+
+    #points are stored as public object in redis
+	#to store private, use robot.brain.set/get
+    robot.brain.data.points ||= {}
+    points = robot.brain.data.points
 
   #default values
   triviaOn = false
@@ -41,6 +45,7 @@ module.exports = (robot) ->
 
       currentQuestion = response.question
       msg.send currentQuestion
+      msg.send currentSolution
 
       #creating string of (_) for a hint and filling them in up to half
       solutionHint = Array(currentSolution.length+1).join('_')
@@ -72,11 +77,11 @@ module.exports = (robot) ->
       points[username] ?= 0
       points[username] += 1
 
-      #update points object in brain
-      #data is persistent until hubot is restarted
-      robot.brain.points = points
+      #update points object in db
+      #robot.brain.set "points", points
+      robot.brain.data.points = points
 
-      msg.reply "You currently have " + points[username] + " points"
+      msg.reply "You currently have " + points[username] + " point(s)"
 
       triviaStop(msg)
       triviaStart(msg)
@@ -106,10 +111,10 @@ module.exports = (robot) ->
 
   #----------------Leaderboard----------------#
   #show top 10 on leaderboard + their points
-  #by sorting robot.brain.points object into sortable array
   robot.respond /leaderboard/i, (msg) ->
     sortable = []
-    for user,pts of robot.brain.points
+    #for user,pts of robot.brain.get('points')
+    for user,pts of robot.brain.data.points
       sortable.push([user,pts])
     sorted = sortable.sort((a,b) ->
       b[1]-a[1]
@@ -120,6 +125,11 @@ module.exports = (robot) ->
         break
       i++
       msg.send user[0] + ": " + user[1]
+  
+  #show user's points
+  robot.respond /trivia points/i, (msg) ->
+    username = msg.message.user.name
+    msg.reply "You currently have " + (points[username] or 0) + " point(s)"
 
   #-----------------Debugging-----------------#
   #Skip current question
