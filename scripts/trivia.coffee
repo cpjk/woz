@@ -13,8 +13,8 @@ module.exports = (robot) ->
     #points are stored as public object in redis
     #to store private, use robot.brain.set/get
     #initializing empty object if there wasn't already one stored
-    robot.brain.data.points ||= {}
-    points = robot.brain.data.points
+    #robot.brain.data.points ||= {}
+    points = robot.brain.get('pointlist') or {}
 
   #default values
   triviaOn = false
@@ -80,7 +80,8 @@ module.exports = (robot) ->
         points[username] += 1
 
         #update points object in db
-        robot.brain.data.points = points
+        #robot.brain.data.points = points
+        robot.brain.set 'pointlist', points
 
         msg.reply "You currently have " + points[username] + " points"
 
@@ -115,22 +116,14 @@ module.exports = (robot) ->
   robot.respond /leaderboard/i, (msg) ->
     msg.send "Top 10 scores:"
     sortable = []
-    for user,pts of robot.brain.data.points
+    #for user,pts of robot.brain.data.points
+    for user,pts of points
       sortable.push([user,pts])
     sorted = sortable.sort (a,b) ->
       b[1]-a[1]
     for user in sorted.slice(0,10)
       msg.send user[0] + ": " + user[1]
 
-    ###
-    i = 0
-    for user in sorted
-      if i==10
-        break
-      i++
-      msg.send user[0] + ": " + user[1]
-    ###
-  
   #show user's points
   robot.respond /trivia points/i, (msg) ->
     username = msg.message.user.name
