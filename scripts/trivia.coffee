@@ -8,12 +8,11 @@ points = {}
 
 module.exports = (robot) ->
 
+  #don't try to access the brain until it is loaded
   robot.brain.on 'loaded', ->
 
-    #points are stored as public object in redis
-    #to store private, use robot.brain.set/get
-    #initializing empty object if there wasn't already one stored
-    #robot.brain.data.points ||= {}
+    #points are stored as private object in redis
+    #get point object
     points = robot.brain.get('pointlist') or {}
 
   #default values
@@ -80,7 +79,6 @@ module.exports = (robot) ->
         points[username] += 1
 
         #update points object in db
-        #robot.brain.data.points = points
         robot.brain.set 'pointlist', points
 
         msg.reply "You currently have " + points[username] + " points"
@@ -116,7 +114,6 @@ module.exports = (robot) ->
   robot.respond /leaderboard/i, (msg) ->
     msg.send "Top 10 scores:"
     sortable = []
-    #for user,pts of robot.brain.data.points
     for user,pts of points
       sortable.push([user,pts])
     sorted = sortable.sort (a,b) ->
